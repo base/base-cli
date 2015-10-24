@@ -85,10 +85,10 @@ $ npm i -d && npm test
 ### Coverage
 
 ```sh
-Statements : 100% (15/15)
+Statements : 100% (13/13)
 Branches   : 100% (2/2)
-Functions  : 100% (2/2)
-Lines      : 100% (15/15)
+Functions  : 100% (4/4)
+Lines      : 100% (12/12)
 ```
 
 ## Contributing
