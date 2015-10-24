@@ -14,8 +14,12 @@ module.exports = function() {
     var cli = config(app);
     cli.alias('show', 'get')
       .map('store', store(app.store))
-      .map('option')
       .map('data')
+      .map('option')
+      .map('enable')
+      .map('enabled')
+      .map('disable')
+      .map('disabled')
       .map('set')
       .map('del')
       .map('get')
