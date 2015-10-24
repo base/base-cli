@@ -1,6 +1,6 @@
 {
   "name": "base-cli",
-  "description": "Plugin for base-methods that adds a CLI for all built-in methods, as well as methods added by other plugins.",
+  "description": "Plugin for base-methods that maps built-in methods to CLI args (also supports methods from a few plugins, like 'base-store', 'base-options' and 'base-data'.",
   "version": "0.1.0",
   "homepage": "https://github.com/jonschlinkert/base-cli",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
@@ -23,10 +23,10 @@
     "map-config": "^0.2.1"
   },
   "devDependencies": {
-    "base-data": "^0.3.2",
-    "base-methods": "^0.3.0",
-    "base-options": "^0.4.0",
-    "data-store": "^0.11.1",
+    "base-data": "^0.3.3",
+    "base-methods": "^0.3.1",
+    "base-options": "^0.4.2",
+    "base-store": "^0.1.0",
     "expand-args": "^0.2.1",
     "gulp": "^3.9.0",
     "gulp-istanbul": "^0.10.2",
@@ -37,23 +37,41 @@
     "mocha": "*"
   },
   "keywords": [
+    "app",
+    "application",
+    "arg",
+    "args",
     "base",
-    "cli",
-    "command-line",
     "baseplugin",
+    "cache",
+    "cli",
+    "command",
+    "command-line",
+    "config",
     "data",
     "extend",
+    "flag",
+    "flags",
+    "line",
     "merge",
+    "method",
     "methods",
-    "plugin"
+    "option",
+    "options",
+    "opts",
+    "plugin",
+    "store",
+    "terminal"
   ],
   "verb": {
     "related": {
+      "description": "If none of the following plugins meet your needs, feel free to use them as examples for creating your own!",
       "list": [
         "base-data",
-        "base-plugins",
+        "base-methods",
         "base-options",
-        "base-methods"
+        "base-plugins",
+        "base-store"
       ]
     }
   }
