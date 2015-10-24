@@ -1,0 +1,60 @@
+{
+  "name": "base-cli",
+  "description": "Plugin for base-methods that adds a CLI for all built-in methods, as well as methods added by other plugins.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/jonschlinkert/base-cli",
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "jonschlinkert/base-cli",
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/base-cli/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "map-config": "^0.2.1"
+  },
+  "devDependencies": {
+    "base-data": "^0.3.2",
+    "base-methods": "^0.3.0",
+    "base-options": "^0.4.0",
+    "data-store": "^0.11.1",
+    "expand-args": "^0.2.1",
+    "gulp": "^3.9.0",
+    "gulp-istanbul": "^0.10.2",
+    "gulp-jshint": "^1.11.2",
+    "gulp-mocha": "^2.1.3",
+    "jshint-stylish": "^2.0.1",
+    "minimist": "^1.2.0",
+    "mocha": "*"
+  },
+  "keywords": [
+    "base",
+    "cli",
+    "command-line",
+    "baseplugin",
+    "data",
+    "extend",
+    "merge",
+    "methods",
+    "plugin"
+  ],
+  "verb": {
+    "related": {
+      "list": [
+        "base-data",
+        "base-plugins",
+        "base-options",
+        "base-methods"
+      ]
+    }
+  }
+}
