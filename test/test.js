@@ -120,6 +120,17 @@ describe('cli', function () {
       app.use(cli());
     });
 
+    it('should expose `store.cli', function () {
+      assert(app.store.cli);
+      assert(typeof app.store.cli === 'object');
+    });
+
+    it('should not blow up if store plugin is not used', function () {
+      var foo = base();
+      foo.use(cli());
+      assert(typeof foo.store === 'undefined');
+    });
+
     it('should add properties to app.cli.config.store', function (cb) {
       app.store.cli.map('foo', 'set');
       app.store.cli.map('bar', 'get');
