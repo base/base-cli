@@ -25,7 +25,7 @@ describe('cli', function () {
   describe('methods', function () {
     it('should expose a "cli" object on app:', function () {
       assert(app.cli);
-      assert(typeof app.cli === 'object');
+      assert(typeof app.cli === 'function');
     });
 
     it('should expose a "process" method on app.cli:', function () {
@@ -54,6 +54,85 @@ describe('cli', function () {
     });
   });
 
+  describe('cwd', function() {
+    beforeEach(function() {
+      app = base();
+      app.use(store('base-cli-tests'));
+      app.use(cli());
+    });
+
+    it('should set a cwd on app', function(cb) {
+      app.on('set', function(key, val) {
+        assert(key);
+        assert(key === 'cwd');
+        assert(val === process.cwd());
+        cb();
+      });
+
+      app.cli.process({cwd: process.cwd()});
+    });
+  });
+
+  describe('use', function() {
+    beforeEach(function() {
+      app = base();
+      app.use(store('base-cli-tests'));
+      app.use(cli());
+    });
+
+    it('should use a plugin', function(cb) {
+      app.on('use', function(key, val) {
+        assert(key === 'test/fixtures/plugins/a');
+        cb();
+      });
+
+      app.cli.process({use: 'test/fixtures/plugins/a'});
+    });
+
+    it('should use a plugin from a cwd', function(cb) {
+      app.on('use', function(key, val) {
+        assert(key === 'a');
+        cb();
+      });
+
+      app.cli.process({
+        cwd: 'test/fixtures/plugins',
+        use: 'a'
+      });
+    });
+
+    it('should throw an error when plugin is not found', function(cb) {
+      try {
+        app.cli.process({
+          cwd: 'test/fixtures/plugins',
+          use: 'd'
+        });
+        assert(new Error('expected an error'));
+      } catch(err) {
+        assert(err);
+        assert(err.message);
+        assert(err.message === 'cannot find plugin: d');
+        cb();
+      }
+    });
+
+    it('should use an array of plugins from a cwd', function(cb) {
+      var keys = [];
+      app.on('use', function(key, val) {
+        keys.push(key);
+      });
+
+      app.cli.process({
+        cwd: 'test/fixtures/plugins',
+        use: 'a,b,c'
+      });
+
+      assert(keys.length === 3);
+      assert.deepEqual(keys, ['a', 'b', 'c']);
+      cb();
+    });
+  });
+
   describe('map', function() {
     beforeEach(function() {
       app = base();
@@ -70,6 +149,36 @@ describe('cli', function () {
       });
 
       app.cli.process({option: {a: 'b'}});
+    });
+
+    it('should process an object passed to cli', function() {
+      app = base();
+      app.use(store('base-cli-tests'));
+      app.use(cli({option: {a: 'b'}}));
+
+      app.on('option', function(key, val) {
+        assert(key);
+        assert(key === 'a');
+        assert(val === 'b');
+        cb();
+      });
+
+      app.cli.process();
+    });
+
+    it('should process an array passed to cli', function() {
+      app = base();
+      app.use(store('base-cli-tests'));
+      app.use(cli([{option: {a: 'b'}}]));
+
+      app.on('option', function(key, val) {
+        assert(key);
+        assert(key === 'a');
+        assert(val === 'b');
+        cb();
+      });
+
+      app.cli.process();
     });
 
     it('should be chainable', function(cb) {
@@ -122,7 +231,7 @@ describe('cli', function () {
 
     it('should expose `store.cli', function () {
       assert(app.store.cli);
-      assert(typeof app.store.cli === 'object');
+      assert(typeof app.store.cli === 'function');
     });
 
     it('should not blow up if store plugin is not used', function () {
@@ -151,6 +260,33 @@ describe('cli', function () {
       });
 
       app.store.cli.process({set: {a: 'b'}, get: 'a'});
+      assert(called === 2);
+      cb();
+    });
+
+    it('should work as a function', function (cb) {
+      app.store.cli({
+        foo: 'set',
+        bar: 'get'
+      });
+
+      var called = 0;
+
+      app.store.on('set', function(key, val) {
+        assert(key);
+        assert(key === 'a');
+        assert(val === 'b');
+        called++;
+      });
+
+      app.store.on('get', function(key, val) {
+        assert(key);
+        assert(key === 'a');
+        assert(val === 'b');
+        called++;
+      });
+
+      app.store.cli.process({foo: {a: 'b'}, bar: 'a'});
       assert(called === 2);
       cb();
     });
@@ -246,6 +382,57 @@ describe('events', function () {
       });
 
       app.cli.process(argv);
+    });
+
+    it('should emit multiple get events', function (cb) {
+      var argv = expand(['--get=a,b,c']);
+      app.set('a', 'aaa');
+      app.set('b', 'bbb');
+      app.set('c', 'ccc');
+      var keys = [];
+
+      app.on('get', function(key, val) {
+        if (key === 'a') assert(val === 'aaa');
+        if (key === 'b') assert(val === 'bbb');
+        if (key === 'c') assert(val === 'ccc');
+        keys.push(key);
+      });
+
+      app.cli.process(argv);
+      assert(keys.length === 3);
+      cb();
+    });
+  });
+
+  describe('has', function () {
+    it('should emit a has event', function (cb) {
+      var argv = expand(['--has=a']);
+      app.set('a', 'b');
+
+      app.on('has', function(key, val) {
+        assert(key === 'a');
+        assert(val === true)
+        cb();
+      });
+
+      app.cli.process(argv);
+    });
+
+    it('should emit multiple has events', function (cb) {
+      var argv = expand(['--has=a,b,c']);
+      app.set('a', 'aaa');
+      app.set('b', 'bbb');
+      app.set('c', 'ccc');
+      var keys = [];
+
+      app.on('has', function(key, val) {
+        assert(val === true);
+        keys.push(key);
+      });
+
+      app.cli.process(argv);
+      assert(keys.length === 3);
+      cb();
     });
   });
 
@@ -377,11 +564,43 @@ describe('aliases', function () {
   });
 
   describe('show', function () {
-    it('should emit a show event', function (cb) {
+    it('should emit a get event', function (cb) {
       var argv = expand(['--show=a']);
       app.set('a', 'b');
 
       app.on('get', function(key, val) {
+        assert(key);
+        assert(val);
+        assert(key === 'a');
+        assert(val === 'b');
+        cb();
+      });
+
+      app.cli.process(argv);
+    });
+  });
+
+  describe('options', function () {
+    it('should emit an option event', function (cb) {
+      var argv = expand(['--options=a:b']);
+
+      app.on('option', function(key, val) {
+        assert(key);
+        assert(val);
+        assert(key === 'a');
+        assert(val === 'b');
+        cb();
+      });
+
+      app.cli.process(argv);
+    });
+  });
+
+  describe('option', function () {
+    it('should emit an option event', function (cb) {
+      var argv = expand(['--option=a:b']);
+
+      app.on('option', function(key, val) {
         assert(key);
         assert(val);
         assert(key === 'a');
@@ -408,5 +627,122 @@ describe('aliases', function () {
 
       app.cli.process(argv);
     });
+  });
+
+});
+
+describe('cli', function () {
+  beforeEach(function() {
+    app = base();
+    app.use(store('base-cli-tests'));
+    app.use(option);
+    app.use(data());
+    app.use(cli());
+  });
+
+  afterEach(function() {
+    app.store.del({force: true});
+  });
+
+  it('should map an object to methods', function (cb) {
+    var argv = expand(['--set=a:b']);
+    app.cli({
+      set: 'set'
+    });
+
+    app.on('set', function(key, val) {
+      assert(key);
+      assert(val);
+      assert(app.a === 'b');
+      assert(key === 'a');
+      assert(val === 'b');
+      cb();
+    });
+
+    app.cli.process(argv);
+  });
+
+  it('should use custom functions', function (cb) {
+    var argv = expand(['--foo=a:b']);
+    app.cli({
+      set: 'set',
+      foo: function (key, val) {
+        app.set(key, val);
+      }
+    });
+
+    app.on('set', function(key, val) {
+      assert(key);
+      assert(val);
+      assert(app.a === 'b');
+      assert(key === 'a');
+      assert(val === 'b');
+      cb();
+    });
+
+    app.cli.process(argv);
+  });
+
+  it('should use alias mappings', function (cb) {
+    var argv = expand(['--foo=a:b']);
+    app.cli({
+      set: 'set',
+      foo: 'set'
+    });
+
+    app.on('set', function(key, val) {
+      assert(key);
+      assert(val);
+      assert(app.a === 'b');
+      assert(key === 'a');
+      assert(val === 'b');
+      cb();
+    });
+
+    app.cli.process(argv);
+  });
+
+  it('should expose cli.map', function (cb) {
+    var argv = expand(['--set=a:b']);
+    app.cli.map('set');
+
+    app.on('set', function(key, val) {
+      assert(key);
+      assert(val);
+      assert(app.a === 'b');
+      assert(key === 'a');
+      assert(val === 'b');
+      cb();
+    });
+
+    app.cli.process(argv);
+  });
+
+  it('should expose cli.alias', function (cb) {
+    var argv = expand(['--set=a:b']);
+    app.cli.alias('foo', 'set');
+
+    app.on('set', function(key, val) {
+      assert(key);
+      assert(val);
+      assert(app.a === 'b');
+      assert(key === 'a');
+      assert(val === 'b');
+      cb();
+    });
+
+    app.cli.process(argv);
+  });
+
+  it('should throw if args are invalid', function (cb) {
+    try {
+      app.cli([]);
+      cb(new Error('expected an error'));
+    } catch(err) {
+      assert(err);
+      assert(err.message);
+      assert(err.message === 'expected key to be a string or object');
+      cb();
+    }
   });
 });
