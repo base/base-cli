@@ -20,6 +20,7 @@
     "test": "mocha"
   },
   "dependencies": {
+    "isobject": "^2.0.0",
     "map-config": "^0.2.1"
   },
   "devDependencies": {
@@ -65,9 +66,10 @@
   ],
   "verb": {
     "related": {
-      "description": "If none of the following plugins meet your needs, feel free to use them as examples for creating your own!",
+      "description": "Other useful plugins for base-methods:",
       "list": [
         "base-data",
+        "base-config",
         "base-methods",
         "base-options",
         "base-plugins",
