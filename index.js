@@ -9,15 +9,16 @@
 
 var path = require('path');
 var config = require('map-config');
+var isObject = require('isobject');
 
 module.exports = function(args) {
   return function(app) {
     var cli = config(app)
       .alias('show', 'get')
       .alias('options', 'option')
-      .map('store', store(app.store))
-      .map('data')
       .map('option')
+      .map('data')
+      .map('store', store(app.store))
       .map('enable')
       .map('enabled')
       .map('disable')
@@ -30,7 +31,7 @@ module.exports = function(args) {
       })
       .map('has', function(prop) {
         arrayify(prop).forEach(function (key) {
-          app.get(key);
+          app.has(key);
         });
       })
       .map('get', function(prop) {
@@ -40,7 +41,9 @@ module.exports = function(args) {
       })
       .map('use', function(names) {
         arrayify(names).forEach(function (name) {
-          app.use(tryRequire(name, app));
+          var cwd = app.get('cwd') || process.cwd();
+          app.use(tryRequire(name, cwd));
+          app.emit('use', name);
         });
       });
 
@@ -110,6 +113,10 @@ function proxy(config) {
   return fn;
 }
 
+/**
+ * Cast the given value to an array
+ */
+
 function arrayify(val) {
   if (typeof val === 'string') {
     return val.split(',');
@@ -117,17 +124,19 @@ function arrayify(val) {
   return Array.isArray(val) ? val : [val];
 }
 
-function tryRequire(name, app) {
+/**
+ * Try to require the given module
+ * or file path.
+ */
+
+function tryRequire(name, cwd) {
   try {
     return require(name);
   } catch(err) {}
 
   try {
-    var cwd = app.get('cwd') || process.cwd();
     return require(path.resolve(cwd, name));
   } catch(err) {}
 
-  return function() {
-    console.log('cannot find plugin:', name);
-  };
+  throw new Error('cannot find plugin: ' + name);
 }
