@@ -6,7 +6,8 @@ var minimist = require('minimist');
 var store = require('base-store');
 var base = require('base-methods');
 var data = require('base-data');
-var option = require('base-options');
+var plugins = require('base-plugins');
+var options = require('base-options');
 var expandArgs = require('expand-args');
 var cli = require('..');
 var app;
@@ -18,6 +19,7 @@ function expand(argv) {
 describe('cli', function () {
   beforeEach(function() {
     app = base();
+    app.use(plugins);
     app.use(store('base-cli-tests'));
     app.use(cli());
   });
@@ -57,6 +59,7 @@ describe('cli', function () {
   describe('cwd', function() {
     beforeEach(function() {
       app = base();
+      app.use(plugins);
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
@@ -68,7 +71,6 @@ describe('cli', function () {
         assert(val === process.cwd());
         cb();
       });
-
       app.cli.process({cwd: process.cwd()});
     });
   });
@@ -76,13 +78,14 @@ describe('cli', function () {
   describe('use', function() {
     beforeEach(function() {
       app = base();
+      app.use(plugins);
+      app.use(options);
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
 
     it('should use a plugin', function(cb) {
-      app.on('use', function(key, val) {
-        assert(key === 'test/fixtures/plugins/a');
+      app.once('use', function(key, val) {
         cb();
       });
 
@@ -90,15 +93,17 @@ describe('cli', function () {
     });
 
     it('should use a plugin from a cwd', function(cb) {
+      var n = 0;
       app.on('use', function(key, val) {
-        assert(key === 'a');
-        cb();
+        n++;
       });
 
       app.cli.process({
         cwd: 'test/fixtures/plugins',
         use: 'a'
       });
+      assert(n === 1);
+      cb();
     });
 
     it('should throw an error when plugin is not found', function(cb) {
@@ -111,15 +116,15 @@ describe('cli', function () {
       } catch(err) {
         assert(err);
         assert(err.message);
-        assert(err.message === 'cannot find plugin: d');
+        assert(/cannot find/.test(err.message));
         cb();
       }
     });
 
     it('should use an array of plugins from a cwd', function(cb) {
-      var keys = [];
-      app.on('use', function(key, val) {
-        keys.push(key);
+      var n = 0;
+      app.on('use', function() {
+        n++;
       });
 
       app.cli.process({
@@ -127,8 +132,7 @@ describe('cli', function () {
         use: 'a,b,c'
       });
 
-      assert(keys.length === 3);
-      assert.deepEqual(keys, ['a', 'b', 'c']);
+      assert(n === 3);
       cb();
     });
   });
@@ -136,11 +140,13 @@ describe('cli', function () {
   describe('map', function() {
     beforeEach(function() {
       app = base();
+      app.use(plugins);
+      app.use(options);
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
 
-    it('should process an object of flags', function() {
+    it('should process an object of flags', function(cb) {
       app.on('option', function(key, val) {
         assert(key);
         assert(key === 'a');
@@ -151,8 +157,10 @@ describe('cli', function () {
       app.cli.process({option: {a: 'b'}});
     });
 
-    it('should process an object passed to cli', function() {
+    it('should process an object passed to cli', function(cb) {
       app = base();
+      app.use(plugins);
+      app.use(options);
       app.use(store('base-cli-tests'));
       app.use(cli({option: {a: 'b'}}));
 
@@ -166,8 +174,10 @@ describe('cli', function () {
       app.cli.process();
     });
 
-    it('should process an array passed to cli', function() {
+    it('should process an array passed to cli', function(cb) {
       app = base();
+      app.use(plugins);
+      app.use(options);
       app.use(store('base-cli-tests'));
       app.use(cli([{option: {a: 'b'}}]));
 
@@ -225,6 +235,8 @@ describe('cli', function () {
   describe('store.map', function() {
     beforeEach(function() {
       app = base();
+      app.use(plugins);
+      app.use(options);
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
@@ -293,7 +305,7 @@ describe('cli', function () {
   });
 
   describe('process', function() {
-    it('should process an object of flags', function() {
+    it('should process an object of flags', function(cb) {
       app.on('option', function(key, val) {
         assert(key);
         assert(key === 'a');
@@ -309,8 +321,9 @@ describe('cli', function () {
 describe('should handle methods added by other plugins', function () {
   beforeEach(function() {
     app = base();
+    app.use(plugins);
+    app.use(options);
     app.use(store('base-cli-tests'));
-    app.use(option);
     app.use(data());
     app.use(cli());
   });
@@ -341,8 +354,9 @@ describe('should handle methods added by other plugins', function () {
 describe('events', function () {
   beforeEach(function() {
     app = base();
+    app.use(plugins);
+    app.use(options);
     app.use(store('base-cli-tests'));
-    app.use(option);
     app.use(data());
     app.use(cli());
   });
@@ -553,8 +567,9 @@ describe('events', function () {
 describe('aliases', function () {
   beforeEach(function() {
     app = base();
+    app.use(plugins);
+    app.use(options);
     app.use(store('base-cli-tests'));
-    app.use(option);
     app.use(data());
     app.use(cli());
   });
@@ -634,8 +649,9 @@ describe('aliases', function () {
 describe('cli', function () {
   beforeEach(function() {
     app = base();
+    app.use(plugins);
+    app.use(options);
     app.use(store('base-cli-tests'));
-    app.use(option);
     app.use(data());
     app.use(cli());
   });
