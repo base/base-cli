@@ -18,11 +18,11 @@ $ npm i base-cli --save
 
 ```js
 var cli = require('base-cli');
-var Base = require('base-methods');
-var base = new Base();
+var base = require('base-methods');
+var app = base();
 
 // register the `cli` plugin with [base-methods][]:
-base.use(cli());
+app.use(cli());
 ```
 
 ## API
@@ -38,19 +38,21 @@ This adds a `cli` object to `base` with the following (chainable) methods (`base
 ```js
 var expand = require('expand-args');
 var argv = require('minimist')(process.argv.slice(2));
-var Base = require('base-methods');
+var base = require('base-methods');
 var cli = require('base-cli');
 
-var base = new Base();
-base.use(cli());
+var app = base();
+app.use(cli());
 
-base.cli
-  .map('set')
-  .map('get', console.log)
-  .map('del', console.log)
-  .alias('foo', 'get');
+app.cli
+  .map('foo', function(key, val) {
+    app.get(key, val);
+  })
+  .map('bar', function(key, val) {
+    app.set(key, val);
+  })
 
-base.cli.process(expand(argv));
+app.cli.process(expand(argv));
 
 // command line args:
 //   
