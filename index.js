@@ -8,12 +8,11 @@
 'use strict';
 
 var path = require('path');
-var config = require('map-config');
-var isObject = require('isobject');
+var utils = require('./utils');
 
 module.exports = function(args) {
   return function(app) {
-    var cli = config(app)
+    var cli = utils.mapper(app)
       .alias('show', 'get')
       .alias('options', 'option')
       .map('option')
@@ -43,7 +42,6 @@ module.exports = function(args) {
         arrayify(names).forEach(function (name) {
           var cwd = app.get('cwd') || process.cwd();
           app.use(tryRequire(name, cwd));
-          app.emit('use', name);
         });
       });
 
@@ -60,7 +58,7 @@ module.exports = function(args) {
 
   function store(app) {
     if (!app) return {};
-    var cli = config(app)
+    var cli = utils.mapper(app)
       .alias('show', 'get')
       .map('set')
       .map('del')
@@ -100,7 +98,7 @@ function proxy(config) {
       return config;
     }
 
-    if (!isObject(key)) {
+    if (!utils.isObject(key)) {
       throw new TypeError('expected key to be a string or object');
     }
 
@@ -130,13 +128,32 @@ function arrayify(val) {
  */
 
 function tryRequire(name, cwd) {
+  name = utils.resolve(name);
+  var attempts = [name], fp;
+
   try {
     return require(name);
   } catch(err) {}
 
   try {
-    return require(path.resolve(cwd, name));
+    fp = path.resolve(name);
+    attempts.push(fp);
+    return require(fp);
   } catch(err) {}
 
-  throw new Error('cannot find plugin: ' + name);
+  try {
+    fp = path.resolve(utils.resolve(cwd), name);
+    attempts.push(fp);
+    return require(fp);
+  } catch(err) {}
+
+  throw new Error('cannot find plugin at: \n' + format(attempts));
+}
+
+function format(arr) {
+  var res = '';
+  arr.forEach(function (ele) {
+    res += ' ✖ \'' + ele + '\'' + '\n';
+  });
+  return res;
 }
