@@ -47,6 +47,20 @@ module.exports = function(args) {
 
     app.define('cli', proxy(cli));
 
+    app.cli.keys.forEach(function(name) {
+      app.on(name, function(key, val) {
+        app.emit('*', name, key, val);
+      });
+    });
+
+    if (app.store) {
+      app.store.cli.keys.forEach(function(name) {
+        app.store.on(name, function(key, val) {
+          app.emit('*', 'store.' + name, key, val);
+        });
+      });
+    }
+
     app.cli.process = function (val) {
       args = arrayify(args);
       if (val) args = args.concat(val);
