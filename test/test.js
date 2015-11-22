@@ -25,7 +25,7 @@ describe('cli', function () {
   });
 
   describe('methods', function () {
-    it('should expose a "cli" object on app:', function () {
+    it('should expose a "cli" function on app:', function () {
       assert(app.cli);
       assert(typeof app.cli === 'function');
     });
@@ -85,7 +85,7 @@ describe('cli', function () {
     });
 
     it('should use a plugin', function(cb) {
-      app.once('use', function(key, val) {
+      app.once('use', function() {
         cb();
       });
 
@@ -110,7 +110,7 @@ describe('cli', function () {
       try {
         app.cli.process({
           cwd: 'test/fixtures/plugins',
-          use: 'd'
+          use: 'ddd'
         });
         assert(new Error('expected an error'));
       } catch(err) {
@@ -252,9 +252,9 @@ describe('cli', function () {
       assert(typeof foo.store === 'undefined');
     });
 
-    it('should add properties to app.cli.config.store', function (cb) {
-      app.store.cli.map('foo', 'set');
-      app.store.cli.map('bar', 'get');
+    it('should add properties to app.store.cli.config', function (cb) {
+      app.store.cli.alias('foo', 'set');
+      app.store.cli.alias('bar', 'get');
       var called = 0;
 
       app.store.on('set', function(key, val) {
@@ -271,7 +271,7 @@ describe('cli', function () {
         called++;
       });
 
-      app.store.cli.process({set: {a: 'b'}, get: 'a'});
+      app.store.cli.process({foo: {a: 'b'}, bar: 'a'});
       assert(called === 2);
       cb();
     });
@@ -602,23 +602,6 @@ describe('aliases', function () {
     app.store.del({force: true});
   });
 
-  describe('show', function () {
-    it('should emit a get event', function (cb) {
-      var argv = expand(['--show=a']);
-      app.set('a', 'b');
-
-      app.on('get', function(key, val) {
-        assert(key);
-        assert(val);
-        assert(key === 'a');
-        assert(val === 'b');
-        cb();
-      });
-
-      app.cli.process(argv);
-    });
-  });
-
   describe('options', function () {
     it('should emit an option event', function (cb) {
       var argv = expand(['--options=a:b']);
@@ -650,24 +633,6 @@ describe('aliases', function () {
       app.cli.process(argv);
     });
   });
-
-  describe('store.show', function () {
-    it('should emit a store.show event', function (cb) {
-      var argv = expand(['--store.show=a']);
-      app.store.set('a', 'b');
-
-      app.store.on('get', function(key, val) {
-        assert(key);
-        assert(val);
-        assert(key === 'a');
-        assert(val === 'b');
-        cb();
-      });
-
-      app.cli.process(argv);
-    });
-  });
-
 });
 
 describe('cli', function () {
