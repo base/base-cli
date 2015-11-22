@@ -19,7 +19,7 @@ function expand(argv) {
 describe('cli', function () {
   beforeEach(function() {
     app = base();
-    app.use(plugins);
+    app.use(plugins());
     app.use(store('base-cli-tests'));
     app.use(cli());
   });
@@ -59,7 +59,7 @@ describe('cli', function () {
   describe('cwd', function() {
     beforeEach(function() {
       app = base();
-      app.use(plugins);
+      app.use(plugins());
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
@@ -78,8 +78,8 @@ describe('cli', function () {
   describe('use', function() {
     beforeEach(function() {
       app = base();
-      app.use(plugins);
-      app.use(options);
+      app.use(plugins());
+      app.use(options());
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
@@ -140,8 +140,8 @@ describe('cli', function () {
   describe('map', function() {
     beforeEach(function() {
       app = base();
-      app.use(plugins);
-      app.use(options);
+      app.use(plugins());
+      app.use(options());
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
@@ -159,8 +159,8 @@ describe('cli', function () {
 
     it('should process an object passed to cli', function(cb) {
       app = base();
-      app.use(plugins);
-      app.use(options);
+      app.use(plugins());
+      app.use(options());
       app.use(store('base-cli-tests'));
       app.use(cli({option: {a: 'b'}}));
 
@@ -176,8 +176,8 @@ describe('cli', function () {
 
     it('should process an array passed to cli', function(cb) {
       app = base();
-      app.use(plugins);
-      app.use(options);
+      app.use(plugins());
+      app.use(options());
       app.use(store('base-cli-tests'));
       app.use(cli([{option: {a: 'b'}}]));
 
@@ -235,8 +235,8 @@ describe('cli', function () {
   describe('store.map', function() {
     beforeEach(function() {
       app = base();
-      app.use(plugins);
-      app.use(options);
+      app.use(plugins());
+      app.use(options());
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
@@ -306,14 +306,14 @@ describe('cli', function () {
 
   describe('process', function() {
     it('should process an object of flags', function(cb) {
-      app.on('option', function(key, val) {
+      app.on('set', function(key, val) {
         assert(key);
         assert(key === 'a');
         assert(val === 'b');
         cb();
       });
 
-      app.cli.process({option: {a: 'b'}});
+      app.cli.process({set: {a: 'b'}});
     });
   });
 });
@@ -321,8 +321,8 @@ describe('cli', function () {
 describe('should handle methods added by other plugins', function () {
   beforeEach(function() {
     app = base();
-    app.use(plugins);
-    app.use(options);
+    app.use(plugins());
+    app.use(options());
     app.use(store('base-cli-tests'));
     app.use(data());
     app.use(cli());
@@ -354,8 +354,8 @@ describe('should handle methods added by other plugins', function () {
 describe('events', function () {
   beforeEach(function() {
     app = base();
-    app.use(plugins);
-    app.use(options);
+    app.use(plugins());
+    app.use(options());
     app.use(store('base-cli-tests'));
     app.use(data());
     app.use(cli());
@@ -562,13 +562,37 @@ describe('events', function () {
       cb();
     });
   });
+
+  describe('wildcard', function () {
+    it('should emit the wildcard event for "set"', function (cb) {
+      app.once('*', function(name, key, val) {
+        assert.equal(name, 'set');
+        assert.equal(key, 'x');
+        assert.equal(val, 'y');
+        cb();
+      });
+
+      app.set('x', 'y');
+    });
+
+    it('should emit the wildcard event for "store.set"', function (cb) {
+      app.once('*', function(name, key, val) {
+        assert.equal(name, 'store.set');
+        assert.equal(key, 'x');
+        assert.equal(val, 'y');
+        cb();
+      });
+
+      app.store.set('x', 'y');
+    });
+  });
 });
 
 describe('aliases', function () {
   beforeEach(function() {
     app = base();
-    app.use(plugins);
-    app.use(options);
+    app.use(plugins());
+    app.use(options());
     app.use(store('base-cli-tests'));
     app.use(data());
     app.use(cli());
@@ -649,8 +673,8 @@ describe('aliases', function () {
 describe('cli', function () {
   beforeEach(function() {
     app = base();
-    app.use(plugins);
-    app.use(options);
+    app.use(plugins());
+    app.use(options());
     app.use(store('base-cli-tests'));
     app.use(data());
     app.use(cli());
