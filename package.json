@@ -20,18 +20,18 @@
     "test": "mocha"
   },
   "dependencies": {
-    "base-config": "^0.3.0"
+    "base-config": "^0.3.6"
   },
   "devDependencies": {
-    "base-data": "^0.3.3",
-    "base-methods": "^0.5.0",
-    "base-options": "^0.5.4",
+    "base": "^0.6.4",
+    "base-data": "^0.3.6",
+    "base-options": "^0.5.5",
     "base-plugins": "^0.4.1",
-    "base-store": "^0.2.0",
-    "expand-args": "^0.3.0",
+    "base-store": "^0.3.3",
+    "expand-args": "^0.3.1",
     "gulp": "^3.9.0",
-    "gulp-eslint": "^1.1.0",
-    "gulp-istanbul": "^0.10.2",
+    "gulp-eslint": "^1.1.1",
+    "gulp-istanbul": "^0.10.3",
     "gulp-mocha": "^2.2.0",
     "minimist": "^1.2.0",
     "mocha": "^2.3.4"
@@ -63,6 +63,11 @@
     "store",
     "terminal"
   ],
+  "lintDeps": {
+    "ignore": [
+      "examples"
+    ]
+  },
   "verb": {
     "related": {
       "list": [

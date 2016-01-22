@@ -4,7 +4,7 @@ var expand = require('expand-args');
 var argv = require('minimist')(process.argv.slice(2), {
   alias: {set: 's', get: 'g', del: 'd'}
 });
-var base = require('base-methods');
+var base = require('base');
 var store = require('base-store');
 var option = require('base-options');
 var data = require('base-data');

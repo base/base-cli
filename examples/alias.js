@@ -2,7 +2,7 @@
 
 var argv = require('minimist')(process.argv.slice(2));
 var expand = require('expand-args');
-var base = require('base-methods');
+var base = require('base');
 var plugins = require('base-plugins');
 var options = require('base-options');
 var store = require('base-store');

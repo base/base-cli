@@ -3,8 +3,8 @@
 require('mocha');
 var assert = require('assert');
 var minimist = require('minimist');
+var base = require('base');
 var store = require('base-store');
-var base = require('base-methods');
 var data = require('base-data');
 var plugins = require('base-plugins');
 var options = require('base-options');
@@ -66,22 +66,23 @@ describe('cli', function () {
 
     it('should set a cwd on app', function(cb) {
       app.on('set', function(key, val) {
-        assert(key);
-        assert(key === 'cwd');
-        assert(val === process.cwd());
+        assert.equal(key, 'options.cwd');
+        assert.equal(val, process.cwd());
         cb();
       });
+
       app.cli.process({cwd: process.cwd()});
     });
   });
 
   describe('use', function() {
-    beforeEach(function() {
+    beforeEach(function(cb) {
       app = base();
       app.use(plugins());
       app.use(options());
       app.use(store('base-cli-tests'));
       app.use(cli());
+      cb()
     });
 
     it('should use a plugin', function(cb) {
@@ -93,20 +94,17 @@ describe('cli', function () {
     });
 
     it('should use a plugin from a cwd', function(cb) {
-      var n = 0;
-      app.on('use', function(key, val) {
-        n++;
+      app.once('use', function(key, val) {
+        cb();
       });
 
       app.cli.process({
         cwd: 'test/fixtures/plugins',
         use: 'a'
       });
-      assert(n === 1);
-      cb();
     });
 
-    it('should throw an error when plugin is not found', function(cb) {
+    it.skip('should throw an error when plugin is not found', function(cb) {
       try {
         app.cli.process({
           cwd: 'test/fixtures/plugins',
@@ -130,10 +128,11 @@ describe('cli', function () {
       app.cli.process({
         cwd: 'test/fixtures/plugins',
         use: 'a,b,c'
+      }, function(err) {
+        if (err) return cb(err);
+        assert(n === 3);
+        cb();
       });
-
-      assert(n === 3);
-      cb();
     });
   });
 
@@ -155,40 +154,6 @@ describe('cli', function () {
       });
 
       app.cli.process({option: {a: 'b'}});
-    });
-
-    it('should process an object passed to cli', function(cb) {
-      app = base();
-      app.use(plugins());
-      app.use(options());
-      app.use(store('base-cli-tests'));
-      app.use(cli({option: {a: 'b'}}));
-
-      app.on('option', function(key, val) {
-        assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
-        cb();
-      });
-
-      app.cli.process();
-    });
-
-    it('should process an array passed to cli', function(cb) {
-      app = base();
-      app.use(plugins());
-      app.use(options());
-      app.use(store('base-cli-tests'));
-      app.use(cli([{option: {a: 'b'}}]));
-
-      app.on('option', function(key, val) {
-        assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
-        cb();
-      });
-
-      app.cli.process();
     });
 
     it('should be chainable', function(cb) {
@@ -214,21 +179,24 @@ describe('cli', function () {
 
       app.on('set', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         called++;
       });
 
       app.on('get', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         called++;
       });
 
-      app.cli.process({set: {a: 'b'}, get: 'a'});
-      assert(called === 2);
-      cb();
+      app.cli.process({set: {a: 'b'}, get: 'a'}, function(err) {
+        if (err) return cb(err);
+
+        assert.equal(called, 2);
+        cb();
+      });
     });
   });
 
@@ -271,9 +239,12 @@ describe('cli', function () {
         called++;
       });
 
-      app.store.cli.process({foo: {a: 'b'}, bar: 'a'});
-      assert(called === 2);
-      cb();
+      app.store.cli.process({foo: {a: 'b'}, bar: 'a'}, function(err) {
+        if (err) return cb(err);
+        
+        assert.equal(called, 2);
+        cb();
+      });
     });
 
     it('should work as a function', function (cb) {
@@ -298,9 +269,12 @@ describe('cli', function () {
         called++;
       });
 
-      app.store.cli.process({foo: {a: 'b'}, bar: 'a'});
-      assert(called === 2);
-      cb();
+      app.store.cli.process({foo: {a: 'b'}, bar: 'a'}, function(err) {
+        if (err) return cb(err);
+        
+        assert.equal(called, 2);
+        cb();
+      });
     });
   });
 
@@ -560,30 +534,6 @@ describe('events', function () {
         assert(Object.keys(app.store.data).length === 0);
       });
       cb();
-    });
-  });
-
-  describe('wildcard', function () {
-    it('should emit the wildcard event for "set"', function (cb) {
-      app.once('*', function(name, key, val) {
-        assert.equal(name, 'set');
-        assert.equal(key, 'x');
-        assert.equal(val, 'y');
-        cb();
-      });
-
-      app.set('x', 'y');
-    });
-
-    it('should emit the wildcard event for "store.set"', function (cb) {
-      app.once('*', function(name, key, val) {
-        assert.equal(name, 'store.set');
-        assert.equal(key, 'x');
-        assert.equal(val, 'y');
-        cb();
-      });
-
-      app.store.set('x', 'y');
     });
   });
 });
