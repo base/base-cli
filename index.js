@@ -8,7 +8,13 @@
 'use strict';
 
 var config = require('base-config');
+var cli = require('./lib/cli');
 
-module.exports = function(args) {
-  return config.create('cli', args);
+module.exports = function(options) {
+  options = options || {};
+
+  return function(app) {
+    this.use(config.create('cli'));
+    cli(this, options.keys || []);
+  };
 };
