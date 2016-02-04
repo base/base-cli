@@ -7,16 +7,16 @@ var base = require('base');
 var store = require('base-store');
 var data = require('base-data');
 var plugins = require('base-plugins');
-var options = require('base-options');
+var options = require('base-option');
 var expandArgs = require('expand-args');
 var cli = require('..');
 var app;
 
-function expand(argv) {
-  return expandArgs(minimist(argv));
+function expand(argv, opts) {
+  return expandArgs(minimist(argv, opts), opts);
 }
 
-describe('cli', function () {
+describe('cli', function() {
   beforeEach(function() {
     app = base();
     app.use(plugins());
@@ -24,35 +24,35 @@ describe('cli', function () {
     app.use(cli());
   });
 
-  describe('methods', function () {
-    it('should expose a "cli" function on app:', function () {
+  describe('methods', function() {
+    it('should expose a "cli" function on app:', function() {
       assert(app.cli);
-      assert(typeof app.cli === 'function');
+      assert.equal(typeof app.cli, 'function');
     });
 
-    it('should expose a "process" method on app.cli:', function () {
-      assert(typeof app.cli.process === 'function');
+    it('should expose a "process" method on app.cli:', function() {
+      assert.equal(typeof app.cli.process, 'function');
     });
 
-    it('should expose a "map" method on app.cli:', function () {
-      assert(typeof app.cli.map === 'function');
+    it('should expose a "map" method on app.cli:', function() {
+      assert.equal(typeof app.cli.map, 'function');
     });
   });
 
-  describe('config mapping', function () {
-    it('should expose the config object from app.cli', function () {
+  describe('config mapping', function() {
+    it('should expose the config object from app.cli', function() {
       assert(app.cli.config);
-      assert(typeof app.cli.config === 'object');
+      assert.equal(typeof app.cli.config, 'object');
     });
 
-    it('should add a set method to config', function () {
-      assert(typeof app.cli.config.set === 'function');
+    it('should add a set method to config', function() {
+      assert.equal(typeof app.cli.config.set, 'function');
     });
-    it('should add a get method to config', function () {
-      assert(typeof app.cli.config.get === 'function');
+    it('should add a get method to config', function() {
+      assert.equal(typeof app.cli.config.get, 'function');
     });
-    it('should add a del method to config', function () {
-      assert(typeof app.cli.config.del === 'function');
+    it('should add a del method to config', function() {
+      assert.equal(typeof app.cli.config.del, 'function');
     });
   });
 
@@ -64,14 +64,16 @@ describe('cli', function () {
       app.use(cli());
     });
 
-    it('should set a cwd on app', function(cb) {
-      app.on('set', function(key, val) {
-        assert.equal(key, 'options.cwd');
+    it('should set a cwd on app.options', function(cb) {
+      app.on('option', function(key, val) {
+        assert.equal(key, 'cwd');
         assert.equal(val, process.cwd());
         cb();
       });
 
-      app.cli.process({cwd: process.cwd()});
+      app.cli.process({cwd: process.cwd()}, function(err) {
+        if (err) return cb(err);
+      });
     });
   });
 
@@ -90,7 +92,9 @@ describe('cli', function () {
         cb();
       });
 
-      app.cli.process({use: 'test/fixtures/plugins/a'});
+      app.cli.process({use: 'test/fixtures/plugins/a'}, function(err) {
+        if (err) return cb(err);
+      });
     });
 
     it('should use a plugin from a cwd', function(cb) {
@@ -101,22 +105,9 @@ describe('cli', function () {
       app.cli.process({
         cwd: 'test/fixtures/plugins',
         use: 'a'
+      }, function(err) {
+        if (err) return cb(err);
       });
-    });
-
-    it.skip('should throw an error when plugin is not found', function(cb) {
-      try {
-        app.cli.process({
-          cwd: 'test/fixtures/plugins',
-          use: 'ddd'
-        });
-        assert(new Error('expected an error'));
-      } catch(err) {
-        assert(err);
-        assert(err.message);
-        assert(/cannot find/.test(err.message));
-        cb();
-      }
     });
 
     it('should use an array of plugins from a cwd', function(cb) {
@@ -130,7 +121,7 @@ describe('cli', function () {
         use: 'a,b,c'
       }, function(err) {
         if (err) return cb(err);
-        assert(n === 3);
+        assert.equal(n, 3);
         cb();
       });
     });
@@ -148,12 +139,14 @@ describe('cli', function () {
     it('should process an object of flags', function(cb) {
       app.on('option', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process({option: {a: 'b'}});
+      app.cli.process({option: {a: 'b'}}, function(err) {
+        if (err) return cb(err);
+      });
     });
 
     it('should be chainable', function(cb) {
@@ -164,15 +157,17 @@ describe('cli', function () {
 
       app.on('set', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process({c: {a: 'b'}});
+      app.cli.process({c: {a: 'b'}}, function(err) {
+        if (err) return cb(err);
+      });
     });
 
-    it('should add properties to app.cli.config', function (cb) {
+    it('should add properties to app.cli.config', function(cb) {
       app.cli.map('foo', 'set');
       app.cli.map('bar', 'get');
       var called = 0;
@@ -209,33 +204,33 @@ describe('cli', function () {
       app.use(cli());
     });
 
-    it('should expose `store.cli', function () {
+    it('should expose `store.cli', function() {
       assert(app.store.cli);
-      assert(typeof app.store.cli === 'function');
+      assert.equal(typeof app.store.cli, 'function');
     });
 
-    it('should not blow up if store plugin is not used', function () {
+    it('should not blow up if store plugin is not used', function() {
       var foo = base();
       foo.use(cli());
-      assert(typeof foo.store === 'undefined');
+      assert.equal(typeof foo.store, 'undefined');
     });
 
-    it('should add properties to app.store.cli.config', function (cb) {
+    it('should add properties to app.store.cli.config', function(cb) {
       app.store.cli.alias('foo', 'set');
       app.store.cli.alias('bar', 'get');
       var called = 0;
 
       app.store.on('set', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         called++;
       });
 
       app.store.on('get', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         called++;
       });
 
@@ -247,7 +242,7 @@ describe('cli', function () {
       });
     });
 
-    it('should work as a function', function (cb) {
+    it('should work as a function', function(cb) {
       app.store.cli({
         foo: 'set',
         bar: 'get'
@@ -257,15 +252,15 @@ describe('cli', function () {
 
       app.store.on('set', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         called++;
       });
 
       app.store.on('get', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         called++;
       });
 
@@ -282,17 +277,19 @@ describe('cli', function () {
     it('should process an object of flags', function(cb) {
       app.on('set', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process({set: {a: 'b'}});
+      app.cli.process({set: {a: 'b'}}, function(err) {
+        if (err) return cb(err);
+      });
     });
   });
 });
 
-describe('should handle methods added by other plugins', function () {
+describe('should handle methods added by other plugins', function() {
   beforeEach(function() {
     app = base();
     app.use(plugins());
@@ -306,26 +303,26 @@ describe('should handle methods added by other plugins', function () {
     app.store.del({force: true});
   });
 
-  describe('store', function () {
-    it('should add a store method to config', function () {
-      assert(typeof app.cli.config.store === 'function');
+  describe('store', function() {
+    it('should add a store method to config', function() {
+      assert.equal(typeof app.cli.config.store, 'function');
     });
   });
 
-  describe('option', function () {
-    it('should add an option method to config', function () {
-      assert(typeof app.cli.config.option === 'function');
+  describe('option', function() {
+    it('should add an option method to config', function() {
+      assert.equal(typeof app.cli.config.option, 'function');
     });
   });
 
-  describe('data', function () {
-    it('should add a data method to config', function () {
-      assert(typeof app.cli.config.data === 'function');
+  describe('data', function() {
+    it('should add a data method to config', function() {
+      assert.equal(typeof app.cli.config.data, 'function');
     });
   });
 });
 
-describe('events', function () {
+describe('events', function() {
   beforeEach(function() {
     app = base();
     app.use(plugins());
@@ -339,40 +336,44 @@ describe('events', function () {
     app.store.del({force: true});
   });
 
-  describe('set', function () {
-    it('should emit a set event', function (cb) {
+  describe('set', function() {
+    it('should emit a set event', function(cb) {
       var argv = expand(['--set=a:b']);
 
       app.on('set', function(key, val) {
         assert(key);
         assert(val);
-        assert(app.a === 'b');
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(app.a, 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
   });
 
-  describe('get', function () {
-    it('should emit a get event', function (cb) {
+  describe('get', function() {
+    it('should emit a get event', function(cb) {
       var argv = expand(['--get=a']);
       app.set('a', 'b');
 
       app.on('get', function(key, val) {
         assert(key);
         assert(val);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
 
-    it('should emit multiple get events', function (cb) {
+    it('should emit multiple get events', function(cb) {
       var argv = expand(['--get=a,b,c']);
       app.set('a', 'aaa');
       app.set('b', 'bbb');
@@ -380,33 +381,37 @@ describe('events', function () {
       var keys = [];
 
       app.on('get', function(key, val) {
-        if (key === 'a') assert(val === 'aaa');
-        if (key === 'b') assert(val === 'bbb');
-        if (key === 'c') assert(val === 'ccc');
+        if (key === 'a') assert.equal(val, 'aaa');
+        if (key === 'b') assert.equal(val, 'bbb');
+        if (key === 'c') assert.equal(val, 'ccc');
         keys.push(key);
       });
 
-      app.cli.process(argv);
-      assert(keys.length === 3);
-      cb();
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+        assert.equal(keys.length, 3);
+        cb();
+      });
     });
   });
 
-  describe('has', function () {
-    it('should emit a has event', function (cb) {
+  describe('has', function() {
+    it('should emit a has event', function(cb) {
       var argv = expand(['--has=a']);
       app.set('a', 'b');
 
       app.on('has', function(key, val) {
-        assert(key === 'a');
-        assert(val === true)
+        assert.equal(key, 'a');
+        assert.equal(val, true)
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
 
-    it('should emit multiple has events', function (cb) {
+    it('should emit multiple has events', function(cb) {
       var argv = expand(['--has=a,b,c']);
       app.set('a', 'aaa');
       app.set('b', 'bbb');
@@ -414,93 +419,105 @@ describe('events', function () {
       var keys = [];
 
       app.on('has', function(key, val) {
-        assert(val === true);
+        assert.equal(val, true);
         keys.push(key);
       });
 
-      app.cli.process(argv);
-      assert(keys.length === 3);
-      cb();
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+        assert.equal(keys.length, 3);
+        cb();
+      });
     });
   });
 
-  describe('del', function () {
-    it('should emit a del event', function (cb) {
+  describe('del', function() {
+    it('should emit a del event', function(cb) {
       var argv = expand(['--del=a']);
       app.set('a', 'b');
 
       app.on('del', function(key) {
         assert(key);
-        assert(key === 'a');
-        assert(typeof app.a === 'undefined');
+        assert.equal(key, 'a');
+        assert.equal(typeof app.a, 'undefined');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
   });
 
-  describe('option', function () {
-    it('should emit an option event', function (cb) {
+  describe('option', function() {
+    it('should emit an option event', function(cb) {
       var argv = expand(['--option=a:b']);
 
       app.on('option', function(key, val) {
         assert(key);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
   });
 
-  describe('data', function () {
-    it('should emit a data event', function (cb) {
+  describe('data', function() {
+    it('should emit a data event', function(cb) {
       var argv = expand(['--data=a:b']);
 
       app.on('data', function(args) {
         assert(Array.isArray(args));
-        assert(args.length === 1);
-        assert(args[0].a === 'b');
+        assert.equal(args.length, 1);
+        assert.equal(args[0].a, 'b');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
   });
 
-  describe('store', function () {
-    it('should emit a store.set event', function (cb) {
+  describe('store', function() {
+    it('should emit a store.set event', function(cb) {
       var argv = expand(['--store.set=a:b']);
       app.store.on('set', function(key, val) {
         assert(key);
         assert(val);
-        assert(app.store.data.a === 'b');
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(app.store.data.a, 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
 
-    it('should emit a store.get event', function (cb) {
+    it('should emit a store.get event', function(cb) {
       var argv = expand(['--store.get=a']);
       app.store.set('a', 'b');
 
       app.store.on('get', function(key, val) {
         assert(key);
         assert(val);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
 
-    it('should emit a store.del event', function (cb) {
+    it('should emit a store.del event', function(cb) {
       var argv = expand(['--store.del=a,b']);
       app.store.set('a', 'aaa');
       app.store.set('b', 'bbb');
@@ -510,16 +527,19 @@ describe('events', function () {
         keys.push(key);
       });
 
-      app.cli.process(argv);
-      assert(keys.length === 2);
-      process.nextTick(function () {
-        assert(Object.keys(app.store.data).length === 2);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+        assert.equal(keys.length, 2);
+        process.nextTick(function() {
+          assert.equal(Object.keys(app.store.data).length, 2);
+        });
+        cb();
       });
-      cb();
     });
 
-    it('should delete the entire store', function (cb) {
+    it('should delete the entire store', function(cb) {
       var argv = expand(['--store.del=force:true']);
+
       app.store.set('a', 'aaa');
       app.store.set('b', 'bbb');
       var keys = [];
@@ -528,17 +548,18 @@ describe('events', function () {
         keys.push(key);
       });
 
-      app.cli.process(argv);
-      assert(keys.length === 2);
-      process.nextTick(function () {
-        assert(Object.keys(app.store.data).length === 0);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+
+        assert.equal(keys.length, 2);
+        assert.equal(Object.keys(app.store.data).length, 0);
+        cb();
       });
-      cb();
     });
   });
 });
 
-describe('aliases', function () {
+describe('aliases', function() {
   beforeEach(function() {
     app = base();
     app.use(plugins());
@@ -552,40 +573,44 @@ describe('aliases', function () {
     app.store.del({force: true});
   });
 
-  describe('options', function () {
-    it('should emit an option event', function (cb) {
+  describe('options', function() {
+    it('should emit an option event', function(cb) {
       var argv = expand(['--options=a:b']);
 
       app.on('option', function(key, val) {
         assert(key);
         assert(val);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
   });
 
-  describe('option', function () {
-    it('should emit an option event', function (cb) {
+  describe('option', function() {
+    it('should emit an option event', function(cb) {
       var argv = expand(['--option=a:b']);
 
       app.on('option', function(key, val) {
         assert(key);
         assert(val);
-        assert(key === 'a');
-        assert(val === 'b');
+        assert.equal(key, 'a');
+        assert.equal(val, 'b');
         cb();
       });
 
-      app.cli.process(argv);
+      app.cli.process(argv, function(err) {
+        if (err) return cb(err);
+      });
     });
   });
 });
 
-describe('cli', function () {
+describe('cli', function() {
   beforeEach(function() {
     app = base();
     app.use(plugins());
@@ -599,7 +624,7 @@ describe('cli', function () {
     app.store.del({force: true});
   });
 
-  it('should map an object to methods', function (cb) {
+  it('should map an object to methods', function(cb) {
     var argv = expand(['--set=a:b']);
     app.cli({
       set: 'set'
@@ -608,20 +633,22 @@ describe('cli', function () {
     app.on('set', function(key, val) {
       assert(key);
       assert(val);
-      assert(app.a === 'b');
-      assert(key === 'a');
-      assert(val === 'b');
+      assert.equal(app.a, 'b');
+      assert.equal(key, 'a');
+      assert.equal(val, 'b');
       cb();
     });
 
-    app.cli.process(argv);
+    app.cli.process(argv, function(err) {
+      if (err) return cb(err);
+    });
   });
 
-  it('should use custom functions', function (cb) {
+  it('should use custom functions', function(cb) {
     var argv = expand(['--foo=a:b']);
     app.cli({
       set: 'set',
-      foo: function (key, val) {
+      foo: function(key, val) {
         app.set(key, val);
       }
     });
@@ -629,16 +656,18 @@ describe('cli', function () {
     app.on('set', function(key, val) {
       assert(key);
       assert(val);
-      assert(app.a === 'b');
-      assert(key === 'a');
-      assert(val === 'b');
+      assert.equal(app.a, 'b');
+      assert.equal(key, 'a');
+      assert.equal(val, 'b');
       cb();
     });
 
-    app.cli.process(argv);
+    app.cli.process(argv, function(err) {
+      if (err) return cb(err);
+    });
   });
 
-  it('should use alias mappings', function (cb) {
+  it('should use alias mappings', function(cb) {
     var argv = expand(['--foo=a:b']);
     app.cli({
       set: 'set',
@@ -648,55 +677,61 @@ describe('cli', function () {
     app.on('set', function(key, val) {
       assert(key);
       assert(val);
-      assert(app.a === 'b');
-      assert(key === 'a');
-      assert(val === 'b');
+      assert.equal(app.a, 'b');
+      assert.equal(key, 'a');
+      assert.equal(val, 'b');
       cb();
     });
 
-    app.cli.process(argv);
+    app.cli.process(argv, function(err) {
+      if (err) return cb(err);
+    });
   });
 
-  it('should expose cli.map', function (cb) {
+  it('should expose cli.map', function(cb) {
     var argv = expand(['--set=a:b']);
     app.cli.map('set');
 
     app.on('set', function(key, val) {
       assert(key);
       assert(val);
-      assert(app.a === 'b');
-      assert(key === 'a');
-      assert(val === 'b');
+      assert.equal(app.a, 'b');
+      assert.equal(key, 'a');
+      assert.equal(val, 'b');
       cb();
     });
 
-    app.cli.process(argv);
+    app.cli.process(argv, function(err) {
+      if (err) return cb(err);
+    });
   });
 
-  it('should expose cli.alias', function (cb) {
+  it('should expose cli.alias', function(cb) {
     var argv = expand(['--set=a:b']);
     app.cli.alias('foo', 'set');
 
     app.on('set', function(key, val) {
       assert(key);
       assert(val);
-      assert(app.a === 'b');
-      assert(key === 'a');
-      assert(val === 'b');
+      assert.equal(app.a, 'b');
+      assert.equal(key, 'a');
+      assert.equal(val, 'b');
       cb();
     });
 
-    app.cli.process(argv);
+    app.cli.process(argv, function(err) {
+      if (err) return cb(err);
+    });
   });
 
-  it('should throw if args are invalid', function (cb) {
+  it('should throw if args are invalid', function(cb) {
     try {
       app.cli([]);
       cb(new Error('expected an error'));
     } catch(err) {
       assert(err);
       assert(err.message);
-      assert(err.message === 'expected key to be a string or object');
+      assert.equal(err.message, 'expected key to be a string or object');
       cb();
     }
   });
