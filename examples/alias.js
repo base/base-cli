@@ -2,18 +2,18 @@
 
 var argv = require('minimist')(process.argv.slice(2));
 var expand = require('expand-args');
-var base = require('base');
 var plugins = require('base-plugins');
-var options = require('base-options');
+var option = require('base-option');
 var store = require('base-store');
 var data = require('base-data');
-var cli = require('./');
+var base = require('base');
+var cli = require('../');
 
 var app = base()
   .use(plugins)
-  .use(options)
+  .use(option)
   .use(store('foo'))
-  .use(data('bar'))
+  .use(data())
   .use(cli())
 
 app.cli({
@@ -27,5 +27,11 @@ app.on('set', function (val, key) {
   console.log('set:', val, key);
 });
 
-app.cli.process(expand(argv));
+/**
+ * $ node examples/alias --set=foo:bar --set=baz:qux
+ */
+
+app.cli.process(expand(argv), function(err) {
+  if (err) throw err;
+});
 

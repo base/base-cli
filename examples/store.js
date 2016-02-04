@@ -11,6 +11,9 @@ var app = base()
   .use(store('base-cli-test'))
   .use(cli())
 
+app.on('store.set', function (key, val) {
+  console.log('[store] set', key, '=>', val);
+});
 app.store.on('set', function (key, val) {
   console.log('[store] set', key, '=>', val);
 });
@@ -21,8 +24,10 @@ app.store.on('del', function (key) {
   console.log('[store] deleted =>', key);
 });
 
-app.cli.process(expand(argv));
 // Try:
 //
 //  'node examples/store.js --store.set=a:b --store.get=a --store.del=a'
 //
+app.cli.process(expand(argv), function(err) {
+  if (err) throw err;
+});

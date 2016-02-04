@@ -4,10 +4,10 @@ var expand = require('expand-args');
 var argv = require('minimist')(process.argv.slice(2), {
   alias: {set: 's', get: 'g', del: 'd'}
 });
-var base = require('base');
 var store = require('base-store');
-var option = require('base-options');
+var option = require('base-option');
 var data = require('base-data');
+var base = require('base');
 var cli = require('..');
 var app = base()
   .use(store('base-cli-test'))
@@ -28,11 +28,13 @@ app.on('data', function (args) {
   console.log('[data]', args);
 });
 
-app.cli.process(expand(argv));
 // try these:
 //
-//   '$ node examples/events.js --set=foo:bar'
-//   '$ node examples/events.js --store.set=one:two'
-//   '$ node examples/events.js --data=foo:a,b,c'
-//   '$ node examples/events.js --enable=lint'
+//   $ node examples/events.js --set=foo:bar
+//   $ node examples/events.js --store.set=one:two
+//   $ node examples/events.js --data=foo:a,b,c
+//   $ node examples/events.js --enable=lint
 //
+app.cli.process(expand(argv), function(err) {
+  if (err) throw err;
+});

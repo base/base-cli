@@ -13,5 +13,7 @@ base.cli
   .map('del', console.log)
   .alias('foo', 'get');
 
-base.cli.process(expand(argv));
 // try: '--set=a:b --get=a'
+base.cli.process(expand(argv), function(err) {
+  if (err) throw err;
+});
