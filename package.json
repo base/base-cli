@@ -1,7 +1,7 @@
 {
   "name": "base-cli",
   "description": "Plugin for base-methods that maps built-in methods to CLI args (also supports methods from a few plugins, like 'base-store', 'base-options' and 'base-data'.",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "homepage": "https://github.com/jonschlinkert/base-cli",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/base-cli",
@@ -10,7 +10,8 @@
   },
   "license": "MIT",
   "files": [
-    "index.js"
+    "index.js",
+    "lib/"
   ],
   "main": "index.js",
   "engines": {
@@ -20,7 +21,7 @@
     "test": "mocha"
   },
   "dependencies": {
-    "base-config": "^0.3.6",
+    "base-config": "^0.4.0",
     "debug": "^2.2.0",
     "export-files": "^2.1.1",
     "extend-shallow": "^2.0.1",
