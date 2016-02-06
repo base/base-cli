@@ -728,7 +728,7 @@ describe('cli', function() {
     try {
       app.cli([]);
       cb(new Error('expected an error'));
-    } catch(err) {
+    } catch (err) {
       assert(err);
       assert(err.message);
       assert.equal(err.message, 'expected key to be a string or object');
