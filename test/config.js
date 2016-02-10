@@ -32,7 +32,7 @@ describe('--config', function() {
   });
 
   describe('plugins', function() {
-    it('should arrayify the plugins value when a boolean is passed', function(cb) {
+    it.only('should arrayify the plugins value when a boolean is passed', function(cb) {
       var args = expand(['--config=plugins:foo']);
 
       app.cli.process(args, function(err) {
