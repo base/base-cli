@@ -90,23 +90,28 @@ $ --ask "author.*"
 $ --ask "*.name*"
 ```
 
-### [--cli](lib/commands/cwd.js#L16)
+### [--cli](lib/commands/cwd.js#L19)
 
 Set the current working directory.
 
 **Example**
 
 ```sh
+# set working directory to "foo"
 $ --cwd=foo
+# display cwd
+$ --cwd
 ```
 
-### [--data](lib/commands/data.js#L22)
+### [--data](lib/commands/data.js#L25)
 
 Set data on the `app.cache.data` object. This is the API-equivalent of calling `app.data()`.
 
 **Example**
 
 ```sh
+$ --data
+# display data object
 $ --data=foo
 # sets {foo: true}
 $ --data=foo:bar
@@ -158,9 +163,19 @@ $ --option=foo.bar:baz
 # sets {foo:{bar: 'baz'}}
 ```
 
+### [--options](lib/commands/options.js#L16)
+
+Show options in the command line.
+
+**Example**
+
+```sh
+$ app --options
+```
+
 ### [--tasks](lib/commands/tasks.js#L20)
 
-Run the given generators and tasks. This flag is unnecessary when used with [base-runner][].
+Run the given generators and tasks. This flag is unnecessary when used with [base-runner].
 
 **Example**
 
