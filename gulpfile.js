@@ -8,7 +8,7 @@ var mocha = require('gulp-mocha');
 var lint = ['index.js'];
 
 gulp.task('coverage', function() {
-  return gulp.src(lint)
+  return gulp.src(['index.js', 'lib/**/*.js'])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire());
 });
