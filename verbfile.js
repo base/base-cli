@@ -1,6 +1,7 @@
 'use strict';
 
 var through = require('through2');
+var utils = require('./lib/utils');
 
 module.exports = function(verb) {
   verb.extendWith('verb-generate-readme');
@@ -9,7 +10,7 @@ module.exports = function(verb) {
     return through.obj(function(file, enc, next) {
       var str = file.contents.toString();
       str = str.replace(/^(#+ \[)\./gm, '$1--');
-      console.log('converted titles to flags');
+      console.log(utils.green(' ✔'), 'helper toFlag: converted titles to flags');
       file.contents = new Buffer(str);
       next(null, file);
     });
