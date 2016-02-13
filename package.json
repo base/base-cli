@@ -21,12 +21,14 @@
     "test": "mocha"
   },
   "dependencies": {
+    "ansi-cyan": "^0.1.1",
     "arr-union": "^3.0.0",
     "base-config": "^0.4.0",
     "debug": "^2.2.0",
     "empty-dir": "^0.2.0",
     "export-files": "^2.1.1",
     "extend-shallow": "^2.0.1",
+    "fancy-log": "^1.2.0",
     "get-value": "^2.0.3",
     "kind-of": "^3.0.2",
     "lazy-cache": "^1.0.3",
