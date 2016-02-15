@@ -55,9 +55,9 @@ describe('--config', function() {
         assert(pkg);
         assert(pkg.base);
         assert(Array.isArray(pkg.base.plugins));
-        assert.equal(pkg.base.plugins[0], 'bar');
-        assert.equal(pkg.base.plugins[1], 'baz');
-        assert.equal(pkg.base.plugins[2], 'foo');
+        assert.equal(pkg.base.plugins[0], 'foo');
+        assert.equal(pkg.base.plugins[1], 'bar');
+        assert.equal(pkg.base.plugins[2], 'baz');
         cb();
       });
     });
@@ -72,6 +72,19 @@ describe('--config', function() {
         assert(pkg.base);
         assert(Array.isArray(pkg.base.plugins));
         assert.equal(pkg.base.plugins[0], 'foo');
+        cb();
+      });
+    });
+
+    it('should filter out undefined values', function(cb) {
+      var args = expand(['--config=plugins:,,,,']);
+
+      app.cli.process(args, function(err) {
+        if (err) return cb(err);
+        var pkg = app.get('cache.pkg');
+        assert(pkg);
+        assert(pkg.base);
+        assert.equal(typeof pkg.base.plugins, 'undefined');
         cb();
       });
     });
