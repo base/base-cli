@@ -4,7 +4,7 @@ var through = require('through2');
 var utils = require('./lib/utils');
 
 module.exports = function(verb) {
-  verb.extendWith('verb-generate-readme');
+  verb.extendWith('verb-readme-generator');
 
   verb.plugin('toFlag', function(options) {
     return through.obj(function(file, enc, next) {
