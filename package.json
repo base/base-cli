@@ -23,7 +23,7 @@
   "dependencies": {
     "ansi-colors": "^0.1.0",
     "arr-union": "^3.0.0",
-    "base-config": "^0.4.0",
+    "base-config": "^0.4.2",
     "base-questions": "^0.3.2",
     "debug": "^2.2.0",
     "empty-dir": "^0.2.0",
@@ -42,16 +42,16 @@
     "project-name": "^0.2.4",
     "question-match": "^0.1.1",
     "set-value": "^0.3.3",
-    "try-open": "^0.1.0",
+    "try-open": "^0.1.1",
     "write-json": "^0.2.2"
   },
   "devDependencies": {
-    "base": "^0.7.1",
+    "base": "^0.7.3",
     "base-data": "^0.3.6",
     "base-option": "^0.6.1",
     "base-plugins": "^0.4.1",
     "base-store": "^0.3.6",
-    "expand-args": "^0.3.5",
+    "expand-args": "^0.3.6",
     "gulp": "^3.9.0",
     "gulp-eslint": "^1.1.1",
     "gulp-format-md": "^0.1.5",
@@ -98,7 +98,6 @@
       "gulp-format-md"
     ],
     "related": {
-      "highlight": "base-config",
       "list": [
         "base",
         "base-config",
@@ -107,6 +106,7 @@
         "base-plugins",
         "base-task"
       ],
+      "highlight": "base-config",
       "description": "Other useful [base] plugins:"
     },
     "reflinks": [
