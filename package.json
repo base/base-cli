@@ -1,7 +1,7 @@
 {
   "name": "base-cli",
   "description": "Plugin for base-methods that maps built-in methods to CLI args (also supports methods from a few plugins, like 'base-store', 'base-options' and 'base-data'.",
-  "version": "0.4.14",
+  "version": "0.4.15",
   "homepage": "https://github.com/jonschlinkert/base-cli",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/base-cli",
