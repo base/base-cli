@@ -1,7 +1,7 @@
 /*!
  * base-cli <https://github.com/jonschlinkert/base-cli>
  *
- * Copyright (c) 2015, Jon Schlinkert.
+ * Copyright (c) 2015-2016, Jon Schlinkert.
  * Licensed under the MIT License.
  */
 
