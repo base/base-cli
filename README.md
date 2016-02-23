@@ -9,7 +9,7 @@ You might also be interested in [base-config](https://github.com/jonschlinkert/b
 Install with [npm](https://www.npmjs.com/):
 
 ```sh
-$ npm i base-cli --save
+$ npm install base-cli --save
 ```
 
 Adds a `cli` method to `base` for mapping parsed command line arguments existing [base](https://github.com/node-base/base) methods or custom functions.
@@ -70,7 +70,7 @@ app.cli.process(expand(argv), function(err) {
 
 ## CLI
 
-### [--ask](lib/commands/ask.js#L28)
+### [.ask](lib/commands/ask.js#L28)
 
 Force questions that match the given pattern to be asked. The resulting answer data is merged onto `app.cache.data`.
 
@@ -95,7 +95,7 @@ $ --ask "author.*"
 $ --ask "*.name*"
 ```
 
-### [--config](lib/commands/config.js#L29)
+### [.config](lib/commands/config.js#L29)
 
 Prefix the `--config` flag onto other command line options to persist the value to package.json for the current project. For example, if you're using `verb`, the value would be saved to the `verb` object.
 
@@ -119,7 +119,7 @@ $ --config=tasks:readme
 $ --config
 ```
 
-### [--cli](lib/commands/cwd.js#L20)
+### [.cli](lib/commands/cwd.js#L20)
 
 Set the current working directory.
 
@@ -135,7 +135,7 @@ $ --cwd=foo
 $ --cwd
 ```
 
-### [--data](lib/commands/data.js#L25)
+### [.data](lib/commands/data.js#L25)
 
 Set data on the `app.cache.data` object. This is the API-equivalent of calling `app.data()`.
 
@@ -159,7 +159,7 @@ $ --data=foo.bar:baz
 # sets {foo:{bar: 'baz'}}
 ```
 
-### [--emit](lib/commands/emit.js#L21)
+### [.emit](lib/commands/emit.js#L21)
 
 Bind `console.error` to the given event listener, so that when event `name` is emitted, the event arguments will be output in the console.
 
@@ -179,7 +179,7 @@ $ --emit view
 $ --emit page
 ```
 
-### [--init](lib/commands/init.js#L17)
+### [.init](lib/commands/init.js#L17)
 
 Ask initialization questions and persist answer data to the global config store.
 
@@ -189,7 +189,7 @@ Ask initialization questions and persist answer data to the global config store.
 $ --init
 ```
 
-### [--open](lib/commands/open.js#L21)
+### [.open](lib/commands/open.js#L21)
 
 Open a directory, or open a file in the default application associated with the file type.
 
@@ -205,7 +205,7 @@ $ --open answers
 $ --open store
 ```
 
-### [--option](lib/commands/option.js#L25)
+### [.option](lib/commands/option.js#L25)
 
 Set options on the `app.options` object. This is the API-equivalent of calling `app.option()`. You may also use the plural `--options` flag for identical behavior.
 
@@ -225,7 +225,7 @@ $ --option=foo.bar:baz
 # sets {foo:{bar: 'baz'}}
 ```
 
-### [--options](lib/commands/options.js#L24)
+### [.options](lib/commands/options.js#L24)
 
 Set in-memory options on the `app.options` object. This is the API-equivalent of calling `app.option()`. You may also use the singular `--option` flag for identical behavior.
 
@@ -247,7 +247,7 @@ $ --options=foo.bar:baz
 # sets {foo:{bar: 'baz'}}
 ```
 
-### [--save](lib/commands/save.js#L23)
+### [.save](lib/commands/save.js#L23)
 
 Persist a value to the global config store by prefixing a command line option with `--save`.
 
@@ -267,7 +267,7 @@ $ --save=cwd:foo
 $ --save=tasks:readme
 ```
 
-### [--tasks](lib/commands/task.js#L20)
+### [.tasks](lib/commands/task.js#L20)
 
 Alias for `--tasks`. Run the given generators and tasks. This flag is unnecessary when used with [base-runner](https://github.com/jonschlinkert/base-runner).
 
@@ -285,7 +285,7 @@ $ app --task foo:bar
 #=> {task: ['foo:bar']}
 ```
 
-### [--tasks](lib/commands/tasks.js#L20)
+### [.tasks](lib/commands/tasks.js#L20)
 
 Run the given generators and tasks. This flag is unnecessary when used with [base-runner](https://github.com/jonschlinkert/base-runner).
 
@@ -303,7 +303,7 @@ $ app --tasks foo:bar
 #=> {task: ['foo:bar']}
 ```
 
-### [--show](lib/utils.js#L70)
+### [.show](lib/utils.js#L71)
 
 Returns true if `val` is true or is an object with `show: true`
 
@@ -343,12 +343,16 @@ Other useful [base](https://github.com/node-base/base) plugins:
 * [base-plugins](https://www.npmjs.com/package/base-plugins): Upgrade's plugin support in base-methods to allow plugins to be called any time after init. | [homepage](https://github.com/jonschlinkert/base-plugins)
 * [base-task](https://www.npmjs.com/package/base-task): base plugin that provides a very thin wrapper around [https://github.com/doowb/composer](https://github.com/doowb/composer) for adding task methods to… [more](https://www.npmjs.com/package/base-task) | [homepage](https://github.com/node-base/base-task)
 
-## Generate docs
+## Contributing
+
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/jonschlinkert/base-cli/issues/new).
+
+## Building docs
 
 Generate readme and API documentation with [verb](https://github.com/verbose/verb):
 
 ```sh
-$ npm i -d && npm run docs
+$ npm install verb && npm run docs
 ```
 
 Or, if [verb](https://github.com/verbose/verb) is installed globally:
@@ -362,12 +366,8 @@ $ verb
 Install dev dependencies:
 
 ```sh
-$ npm i -d && npm test
+$ npm install -d && npm test
 ```
-
-## Contributing
-
-Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](https://github.com/jonschlinkert/base-cli/issues/new).
 
 ## Author
 
@@ -383,4 +383,4 @@ Released under the [MIT license](https://github.com/jonschlinkert/base-cli/blob/
 
 ***
 
-_This file was generated by [verb](https://github.com/verbose/verb), v0.9.0, on February 19, 2016._
+_This file was generated by [verb](https://github.com/verbose/verb), v0.9.0, on February 23, 2016._
