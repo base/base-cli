@@ -22,9 +22,10 @@
   },
   "dependencies": {
     "ansi-colors": "^0.1.0",
-    "arr-union": "^3.0.0",
-    "base-config": "^0.4.2",
-    "base-questions": "^0.3.2",
+    "arr-union": "^3.1.0",
+    "base-config": "^0.5.0",
+    "base-logger": "^0.1.0",
+    "base-questions": "^0.5.0",
     "debug": "^2.2.0",
     "empty-dir": "^0.2.0",
     "export-files": "^2.1.1",
@@ -44,15 +45,15 @@
     "question-match": "^0.1.1",
     "set-value": "^0.3.3",
     "spawn-commands": "^0.3.1",
-    "try-open": "^0.1.1",
+    "try-open": "^0.1.2",
     "write-json": "^0.2.2"
   },
   "devDependencies": {
-    "base": "^0.7.4",
-    "base-data": "^0.3.6",
+    "base": "^0.7.9",
+    "base-data": "^0.3.7",
     "base-option": "^0.6.1",
-    "base-plugins": "^0.4.3",
-    "base-store": "^0.3.6",
+    "base-plugins": "^0.4.4",
+    "base-store": "^0.4.1",
     "expand-args": "^0.3.6",
     "gulp": "^3.9.1",
     "gulp-eslint": "^2.0.0",
@@ -60,7 +61,7 @@
     "gulp-istanbul": "^0.10.3",
     "gulp-mocha": "^2.2.0",
     "minimist": "^1.2.0",
-    "mocha": "^2.4.5",
+    "mocha": "*",
     "through2": "^2.0.1"
   },
   "keywords": [
@@ -91,6 +92,7 @@
     "terminal"
   ],
   "verb": {
+    "run": true,
     "toc": false,
     "layout": "default",
     "tasks": [
@@ -117,7 +119,10 @@
       "base-runner",
       "generate",
       "verb"
-    ]
+    ],
+    "lint": {
+      "reflinks": true
+    }
   },
   "lintDeps": {
     "ignore": [
