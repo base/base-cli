@@ -156,6 +156,25 @@ $ --emit view
 $ --emit page
 ```
 
+### [.global](lib/commands/g.js#L25)
+
+Persist a value to the global config store by prefixing a command line option with `-g` or `--global`.
+
+**Params**
+
+* **{Object}**: app
+
+**Example**
+
+```sh
+# save a boolean
+$ -g=toc # saves `{ toc: true }` to global defaults
+# save the cwd to use as a global default
+$ -g=cwd:foo
+# save the tasks to run by default
+$ -g=tasks:readme
+```
+
 ### [.init](lib/commands/init.js#L17)
 
 Ask initialization questions and persist answer data to the global config store.
@@ -213,7 +232,7 @@ $ --options=foo.bar:baz
 
 ### [.save](lib/commands/save.js#L25)
 
-Persist a value to the global config store by prefixing a command line option with `--save`.
+Persist a value to the global config store by prefixing a command line option with `--save` or `-s`.
 
 **Params**
 
