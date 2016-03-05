@@ -14,7 +14,6 @@ module.exports = function(options) {
   options = options || {};
 
   return function(app) {
-    this.use(utils.logger());
     this.use(utils.ask());
     this.use(utils.config.create('cli'));
     cli(this, options.keys || []);
