@@ -18,7 +18,7 @@ module.exports = function(options) {
     this.use(utils.config.create('cli'));
     this.use(utils.argv());
     argv(this, process.argv.slice(2));
-    cli(this, options.keys || []);
+    cli(this, options.keys || [], utils.merge({}, app.options, options));
     update(this);
   };
 };
