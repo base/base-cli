@@ -13,12 +13,12 @@ var cli = require('./lib/cli');
 module.exports = function(options) {
   options = options || {};
 
-  return function(app) {
+  return function(app, base) {
     this.use(utils.ask());
     this.use(utils.config.create('cli'));
     this.use(utils.argv());
     argv(this, process.argv.slice(2));
-    cli(this, options.keys || [], utils.merge({}, app.options, options));
+    cli(this, base, options.keys || [], utils.merge({}, app.options, options));
     update(this);
   };
 };
