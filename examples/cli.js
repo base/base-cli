@@ -2,12 +2,12 @@
 
 var argv = require('minimist')(process.argv.slice(2));
 var Base = require('base');
-var base = new Base();
+var app = new Base();
 var cli = require('..');
 
-base.set('pkg.data', require('../package.json'));
-base.use(cli());
+app.set('pkg.data', require('../package.json'));
+app.use(cli());
 
-base.cli.process(argv, function(err) {
+app.cli.process(argv, function(err) {
   if (err) throw err;
 });
