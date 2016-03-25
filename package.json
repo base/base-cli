@@ -64,8 +64,7 @@
     "gulp-mocha": "^2.2.0",
     "minimist": "^1.2.0",
     "mocha": "^2.4.5",
-    "through2": "^2.0.1",
-    "verb-readme-generator": "^0.1.5"
+    "through2": "^2.0.1"
   },
   "keywords": [
     "app",

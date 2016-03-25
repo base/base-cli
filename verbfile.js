@@ -4,7 +4,7 @@ var through = require('through2');
 var utils = require('./lib/utils');
 
 module.exports = function(app) {
-  app.use(require('verb-readme-generator'));
+  app.extendWith('verb-readme-generator');
 
   app.plugin('toFlag', function(options) {
     return through.obj(function(file, enc, next) {
@@ -15,9 +15,6 @@ module.exports = function(app) {
       next(null, file);
     });
   });
-
-  app.options.pipeline = app.options.pipeline || [];
-  app.options.pipeline.push('toFlag');
 
   app.task('default', ['readme']);
 };
