@@ -3,10 +3,10 @@
 var through = require('through2');
 var utils = require('./lib/utils');
 
-module.exports = function(verb) {
-  verb.extendWith(require('verb-readme-generator'));
+module.exports = function(app) {
+  app.use(require('verb-readme-generator'));
 
-  verb.plugin('toFlag', function(options) {
+  app.plugin('toFlag', function(options) {
     return through.obj(function(file, enc, next) {
       var str = file.contents.toString();
       str = str.replace(/^(#+ \[)\./gm, '$1--');
@@ -16,5 +16,8 @@ module.exports = function(verb) {
     });
   });
 
-  verb.task('default', ['readme']);
+  app.options.pipeline = app.options.pipeline || [];
+  app.options.pipeline.push('toFlag');
+
+  app.task('default', ['readme']);
 };
