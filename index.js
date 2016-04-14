@@ -7,18 +7,12 @@
 
 'use strict';
 
-var utils = require('./lib/utils');
+var config = require('base-config');
+var argv = require('base-argv');
 
-module.exports = function(argv) {
-  if (Array.isArray(argv)) {
-    throw new TypeError('expected argv to be parsed');
-  }
-
+module.exports = function(options) {
   return function(app, base) {
-    if (!utils.isObject(app.get('pkg.data'))) {
-      throw new Error('expected base-pkg to be registered');
-    }
-    this.use(utils.argv());
-    this.use(utils.config.create('cli'));
+    this.use(argv(options));
+    this.use(config.create('cli'));
   };
 };

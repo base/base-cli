@@ -4,9 +4,12 @@ require('mocha');
 var path = require('path');
 var assert = require('assert');
 var base = require('base');
+var option = require('base-option');
+var store = require('base-store');
 var plugins = require('base-plugins');
 var expandArgs = require('expand-args');
 var minimist = require('minimist');
+var pkg = require('base-pkg');
 var cli = require('..');
 var app;
 
@@ -14,18 +17,13 @@ function expand(argv, opts) {
   return expandArgs(minimist(argv, opts), opts);
 }
 
-describe.skip('--store', function() {
-  beforeEach(function() {
-    app = base();
-    app.use(plugins());
-    app.use(cli());
-  });
-
+describe('--store', function() {
   describe('store.map', function() {
     beforeEach(function() {
       app = base();
+      app.use(pkg());
       app.use(plugins());
-      app.use(options());
+      app.use(option());
       app.use(store('base-cli-tests'));
       app.use(cli());
     });
@@ -42,6 +40,14 @@ describe.skip('--store', function() {
     });
 
     it('should add properties to app.store.cli.config', function(cb) {
+      app.store.cli.map('set', function(val, key, config, next) {
+        app.store.set(val);
+        next();
+      });
+      app.store.cli.map('get', function(val, key, config, next) {
+        app.store.get(val);
+        next();
+      });
       app.store.cli.alias('foo', 'set');
       app.store.cli.alias('bar', 'get');
       var called = 0;
@@ -69,6 +75,15 @@ describe.skip('--store', function() {
     });
 
     it('should work as a function', function(cb) {
+      app.store.cli.map('set', function(val, key, config, next) {
+        app.store.set(val);
+        next();
+      });
+      app.store.cli.map('get', function(val, key, config, next) {
+        app.store.get(val);
+        next();
+      });
+      
       app.store.cli({
         foo: 'set',
         bar: 'get'

@@ -14,7 +14,7 @@ function expand(argv, opts) {
   return expandArgs(minimist(argv, opts), opts);
 }
 
-describe.skip('--has', function() {
+describe('--has', function() {
   beforeEach(function() {
     app = base();
     app.use(plugins());
@@ -23,37 +23,27 @@ describe.skip('--has', function() {
 
   describe('has', function() {
     it('should emit a has event', function(cb) {
+      app.cli.map('has', function(val, key, config, next) {
+        app.has(val);
+        next();
+      });
+
+      var count = 0;
       var argv = expand(['--has=a']);
       app.set('a', 'b');
 
       app.on('has', function(key, val) {
         assert.equal(key, 'a');
-        assert.equal(val, true)
-        cb();
-      });
-
-      app.cli.process(argv, function(err) {
-        if (err) return cb(err);
-      });
-    });
-
-    it('should emit multiple has events', function(cb) {
-      var argv = expand(['--has=a,b,c']);
-      app.set('a', 'aaa');
-      app.set('b', 'bbb');
-      app.set('c', 'ccc');
-      var keys = [];
-
-      app.on('has', function(key, val) {
         assert.equal(val, true);
-        keys.push(key);
+        count++;
       });
 
       app.cli.process(argv, function(err) {
         if (err) return cb(err);
-        assert.equal(keys.length, 3);
+        assert.equal(count, 1);
         cb();
       });
     });
+
   });
 });

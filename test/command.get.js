@@ -14,7 +14,7 @@ function expand(argv, opts) {
   return expandArgs(minimist(argv, opts), opts);
 }
 
-describe.skip('--get', function() {
+describe('--get', function() {
   beforeEach(function() {
     app = base();
     app.use(plugins());
@@ -23,23 +23,44 @@ describe.skip('--get', function() {
 
   describe('get', function() {
     it('should emit a get event', function(cb) {
+      app.cli.map('get', function(val, key, config, next) {
+        app.get(val);
+        next();
+      });
+
       var argv = expand(['--get=a']);
       app.set('a', 'b');
+      var count = 0;
 
       app.on('get', function(key, val) {
         assert(key);
         assert(val);
         assert.equal(key, 'a');
         assert.equal(val, 'b');
-        cb();
+        count++;
       });
 
-      app.config.process(argv, function(err) {
+      app.cli.process(argv, function(err) {
         if (err) return cb(err);
+        assert.equal(count, 1);
+        cb();
       });
     });
 
     it('should emit multiple get events', function(cb) {
+      app.cli.map('set', function(val, key, config, next) {
+        app.set(val);
+        next();
+      });
+      app.cli.map('get', function(val, key, config, next) {
+        if (Array.isArray(val)) {
+          val.forEach(app.get.bind(app));
+        } else {
+          app.get(val);
+        }
+        next();
+      });
+
       var argv = expand(['--get=a,b,c']);
       app.set('a', 'aaa');
       app.set('b', 'bbb');
@@ -53,7 +74,7 @@ describe.skip('--get', function() {
         keys.push(key);
       });
 
-      app.config.process(argv, function(err) {
+      app.cli.process(argv, function(err) {
         if (err) return cb(err);
         assert.equal(keys.length, 3);
         cb();
