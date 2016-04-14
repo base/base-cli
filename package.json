@@ -1,7 +1,7 @@
 {
   "name": "base-cli",
   "description": "Plugin for base-methods that maps built-in methods to CLI args (also supports methods from a few plugins, like 'base-store', 'base-options' and 'base-data'.",
-  "version": "0.4.26",
+  "version": "0.5.0",
   "homepage": "https://github.com/node-base/base-cli",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "node-base/base-cli",
@@ -22,13 +22,11 @@
   },
   "dependencies": {
     "base-argv": "^0.4.2",
-    "base-config": "^0.5.2",
-    "isobject": "^2.0.0",
-    "lazy-cache": "^1.0.3"
+    "base-config": "^0.5.2"
   },
   "devDependencies": {
+    "ansi-green": "^0.1.1",
     "base": "^0.8.1",
-    "base-data": "^0.4.0",
     "base-option": "^0.7.0",
     "base-pkg": "^0.2.0",
     "base-plugins": "^0.4.10",
@@ -39,11 +37,9 @@
     "gulp-format-md": "^0.1.7",
     "gulp-istanbul": "^0.10.4",
     "gulp-mocha": "^2.2.0",
-    "gulp-unused": "^0.1.2",
     "minimist": "^1.2.0",
     "mocha": "^2.4.5",
-    "through2": "^2.0.1",
-    "write-json": "^0.2.2"
+    "through2": "^2.0.1"
   },
   "keywords": [
     "app",
