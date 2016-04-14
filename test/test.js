@@ -4,6 +4,7 @@ require('mocha');
 var assert = require('assert');
 var minimist = require('minimist');
 var base = require('base');
+var pkg = require('base-pkg');
 var store = require('base-store');
 var data = require('base-data');
 var plugins = require('base-plugins');
@@ -19,6 +20,7 @@ function expand(argv, opts) {
 describe('cli', function() {
   beforeEach(function() {
     app = base();
+    app.use(pkg());
     app.use(plugins());
     app.use(store('base-cli-tests'));
     app.use(cli());
@@ -48,9 +50,6 @@ describe('cli', function() {
     it('should add a set method to config', function() {
       assert.equal(typeof app.cli.config.set, 'function');
     });
-    it('should add a get method to config', function() {
-      assert.equal(typeof app.cli.config.get, 'function');
-    });
     it('should add a del method to config', function() {
       assert.equal(typeof app.cli.config.del, 'function');
     });
@@ -59,6 +58,7 @@ describe('cli', function() {
   describe('cwd', function() {
     beforeEach(function() {
       app = base();
+      app.use(pkg());
       app.use(plugins());
       app.use(store('base-cli-tests'));
       app.use(cli());
@@ -80,6 +80,7 @@ describe('cli', function() {
   describe('map', function() {
     beforeEach(function() {
       app = base();
+      app.use(pkg());
       app.use(plugins());
       app.use(options());
       app.use(store('base-cli-tests'));
@@ -164,6 +165,7 @@ describe('cli', function() {
 describe('should handle methods added by other plugins', function() {
   beforeEach(function() {
     app = base();
+    app.use(pkg());
     app.use(plugins());
     app.use(options());
     app.use(store('base-cli-tests'));
@@ -197,6 +199,7 @@ describe('should handle methods added by other plugins', function() {
 describe('events', function() {
   beforeEach(function() {
     app = base();
+    app.use(pkg());
     app.use(plugins());
     app.use(options());
     app.use(store('base-cli-tests'));
@@ -283,6 +286,7 @@ describe('events', function() {
 describe('aliases', function() {
   beforeEach(function() {
     app = base();
+    app.use(pkg());
     app.use(plugins());
     app.use(options());
     app.use(store('base-cli-tests'));
@@ -334,6 +338,7 @@ describe('aliases', function() {
 describe('cli', function() {
   beforeEach(function() {
     app = base();
+    app.use(pkg());
     app.use(plugins());
     app.use(options());
     app.use(store('base-cli-tests'));

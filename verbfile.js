@@ -3,7 +3,7 @@
 var through = require('through2');
 var utils = require('./lib/utils');
 
-module.exports = function(app) {
+module.exports = function(app, base) {
   app.extendWith('verb-readme-generator');
 
   app.plugin('toFlag', function(options) {
@@ -17,4 +17,17 @@ module.exports = function(app) {
   });
 
   app.task('default', ['readme']);
+};
+
+module.exports.setup = function(Base, base, ctx) {
+  // console.log('baz');
+  // Base.on('runner', function(stage, ctx) {
+  //   console.log(stage, ctx);
+  // });
+
+  base.on('generator', function(name) {
+    console.log(name);
+  });
+
+  base.files('foo', {content: 'whatever'});
 };

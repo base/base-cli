@@ -32,7 +32,7 @@ describe.skip('--has', function() {
         cb();
       });
 
-      app.config.process(argv, function(err) {
+      app.cli.process(argv, function(err) {
         if (err) return cb(err);
       });
     });
@@ -49,7 +49,7 @@ describe.skip('--has', function() {
         keys.push(key);
       });
 
-      app.config.process(argv, function(err) {
+      app.cli.process(argv, function(err) {
         if (err) return cb(err);
         assert.equal(keys.length, 3);
         cb();

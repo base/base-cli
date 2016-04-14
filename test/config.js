@@ -4,12 +4,15 @@ require('mocha');
 var path = require('path');
 var assert = require('assert');
 var base = require('base');
+var pkg = require('base-pkg');
 var plugins = require('base-plugins');
 var expandArgs = require('expand-args');
 var minimist = require('minimist');
 var writeJson = require('write-json');
 var cli = require('..');
 var app;
+
+var fixtures = path.resolve(__dirname, 'fixtures');
 
 function expand(argv, opts) {
   return expandArgs(minimist(argv, opts), opts);
@@ -18,17 +21,17 @@ function expand(argv, opts) {
 describe('--config', function() {
   beforeEach(function() {
     app = base();
+    app.use(pkg());
     app.use(plugins());
     app.use(cli());
-    app.cwd = path.join(__dirname, 'fixtures');
+    app.cwd = fixtures;
+    app.pkg.data = {};
   });
 
   afterEach(function(cb) {
-    var pkgPath = path.resolve(app.cwd, 'package.json');
-    writeJson(pkgPath, {
-      "name": "foo",
-      "private": true
-    }, cb);
+    app.pkg.data = {};
+    var pkgPath = path.resolve(fixtures, 'package.json');
+    writeJson(pkgPath, {'name': 'foo', 'private': true}, cb);
   });
 
   describe('plugins', function() {
@@ -37,11 +40,11 @@ describe('--config', function() {
 
       app.cli.process(args, function(err) {
         if (err) return cb(err);
-        var pkg = app.get('cache.pkg');
-        assert(pkg);
-        assert(pkg.base);
-        assert(Array.isArray(pkg.base.plugins));
-        assert.equal(pkg.base.plugins[0], 'foo');
+        var data = app.pkg.data;
+        assert(data);
+        assert(data.base);
+        assert(Array.isArray(data.base.plugins));
+        assert.equal(data.base.plugins[0], 'foo');
         cb();
       });
     });
@@ -51,13 +54,13 @@ describe('--config', function() {
 
       app.cli.process(args, function(err) {
         if (err) return cb(err);
-        var pkg = app.get('cache.pkg');
-        assert(pkg);
-        assert(pkg.base);
-        assert(Array.isArray(pkg.base.plugins));
-        assert.equal(pkg.base.plugins[0], 'foo');
-        assert.equal(pkg.base.plugins[1], 'bar');
-        assert.equal(pkg.base.plugins[2], 'baz');
+        var data = app.pkg.data;
+        assert(data);
+        assert(data.base);
+        assert(Array.isArray(data.base.plugins));
+        assert.equal(data.base.plugins[0], 'foo');
+        assert.equal(data.base.plugins[1], 'bar');
+        assert.equal(data.base.plugins[2], 'baz');
         cb();
       });
     });
@@ -67,11 +70,11 @@ describe('--config', function() {
 
       app.cli.process(args, function(err) {
         if (err) return cb(err);
-        var pkg = app.get('cache.pkg');
-        assert(pkg);
-        assert(pkg.base);
-        assert(Array.isArray(pkg.base.plugins));
-        assert.equal(pkg.base.plugins[0], 'foo');
+        var data = app.pkg.data;
+        assert(data);
+        assert(data.base);
+        assert(Array.isArray(data.base.plugins));
+        assert.equal(data.base.plugins[0], 'foo');
         cb();
       });
     });
@@ -81,10 +84,10 @@ describe('--config', function() {
 
       app.cli.process(args, function(err) {
         if (err) return cb(err);
-        var pkg = app.get('cache.pkg');
-        assert(pkg);
-        assert(pkg.base);
-        assert.equal(typeof pkg.base.plugins, 'undefined');
+        var data = app.pkg.data;
+        assert(data);
+        assert(data.base);
+        assert.equal(typeof data.base.plugins, 'undefined');
         cb();
       });
     });

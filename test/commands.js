@@ -4,6 +4,7 @@ require('mocha');
 var path = require('path');
 var assert = require('assert');
 var base = require('base');
+var pkg = require('base-pkg');
 var plugins = require('base-plugins');
 var expandArgs = require('expand-args');
 var minimist = require('minimist');
@@ -17,6 +18,7 @@ function expand(argv, opts) {
 describe('cli commands', function() {
   beforeEach(function() {
     app = base();
+    app.use(pkg());
     app.use(plugins());
     app.use(cli());
   });

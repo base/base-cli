@@ -8,49 +8,17 @@
 'use strict';
 
 var utils = require('./lib/utils');
-var cli = require('./lib/cli');
 
-module.exports = function(options) {
-  options = options || {};
+module.exports = function(argv) {
+  if (Array.isArray(argv)) {
+    throw new TypeError('expected argv to be parsed');
+  }
 
   return function(app, base) {
-    this.use(utils.ask());
-    this.use(utils.config.create('cli'));
+    if (!utils.isObject(app.get('pkg.data'))) {
+      throw new Error('expected base-pkg to be registered');
+    }
     this.use(utils.argv());
-    argv(this, process.argv.slice(2));
-    cli(this, base, options.keys || [], utils.merge({}, app.options, options));
-    update(this);
+    this.use(utils.config.create('cli'));
   };
 };
-
-function argv(app, args) {
-  utils.define(app, '_argv', {
-    configurable: true,
-    enumerable: true,
-    set: function(val) {
-      utils.define(app, '_argv', val);
-    },
-    get: function() {
-      return app.argv(utils.minimist(args, {alias: utils.aliases}));
-    }
-  });
-
-  utils.define(app.argv, 'get', function(key) {
-    return utils.get(app._argv, key);
-  });
-
-  utils.define(app.argv, 'has', function(key) {
-    return typeof app.argv.get(key) !== 'undefined';
-  });
-}
-
-function update(app) {
-  var fn = app.cli.process;
-  utils.define(app.cli, 'process', function(args, cb) {
-    if (Array.isArray(args)) {
-      args = utils.minimist(args, {alias: utils.aliases});
-    }
-    app._argv = args;
-    fn.apply(app.cli, arguments);
-  });
-}
